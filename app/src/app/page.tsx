@@ -7,6 +7,15 @@ import { PunkAvatar } from "@/components/PunkAvatar";
 
 const FEATURED_PUNKS = [BigInt(2113), BigInt(4736), BigInt(6507), BigInt(6843), BigInt(1477)];
 
+// Shared styles
+const s = {
+  section: "pt-16",
+  body: "text-zinc-300 text-sm leading-relaxed",
+  muted: "text-zinc-400 text-sm leading-relaxed",
+  card: "bg-zinc-900/50 rounded-xl p-5",
+  cardTitle: "text-sm font-semibold mb-2",
+} as const;
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -30,7 +39,7 @@ export default function Home() {
           <br />
           Trust
         </h1>
-        <p className="text-zinc-400 text-sm mt-4 leading-relaxed">
+        <p className={`${s.muted} mt-4`}>
           Prove who you are without signing from your cold wallet.
           <br />
           Community members vouch for each other on-chain.
@@ -55,47 +64,39 @@ export default function Home() {
         <div className="pt-20">
           <SectionTitle>The problem</SectionTitle>
 
-          <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+          <p className={`${s.body} mb-4`}>
             Most NFT holders keep their assets on a cold wallet. They
             don&apos;t want to sign anything with it — not a transaction,
             not a delegation, not even a message. And they&apos;re right.
             Every signature is a risk.
           </p>
-          <p className="text-zinc-300 text-sm leading-relaxed mb-6">
+          <p className={`${s.body} mb-6`}>
             This makes on-chain identity verification impossible. You
             can&apos;t check the NFT contract to know who someone is if the
             real owner won&apos;t sign from that wallet.
           </p>
 
-          <div className="bg-zinc-900/50 rounded-xl p-5 mb-6">
-            <h3 className="text-sm font-semibold mb-3">
+          <div className={`${s.card} mb-6`}>
+            <h3 className={s.cardTitle}>
               Today, the only way to verify someone is off-chain:
             </h3>
             <ul className="space-y-2 text-zinc-400 text-sm">
-              <li className="flex gap-2">
-                <span className="text-zinc-600 shrink-0">&bull;</span>
-                Do you know this person?
-              </li>
-              <li className="flex gap-2">
-                <span className="text-zinc-600 shrink-0">&bull;</span>
-                Do multiple people in the community know them?
-              </li>
-              <li className="flex gap-2">
-                <span className="text-zinc-600 shrink-0">&bull;</span>
-                Have you met them at events?
-              </li>
-              <li className="flex gap-2">
-                <span className="text-zinc-600 shrink-0">&bull;</span>
-                Are they legit on Twitter / socials?
-              </li>
-              <li className="flex gap-2">
-                <span className="text-zinc-600 shrink-0">&bull;</span>
-                Is there a real human behind the address?
-              </li>
+              {[
+                "Do you know this person?",
+                "Do multiple people in the community know them?",
+                "Have you met them at events?",
+                "Are they legit on Twitter / socials?",
+                "Is there a real human behind the address?",
+              ].map((item) => (
+                <li key={item} className="flex gap-2">
+                  <span className="text-zinc-600 shrink-0">&bull;</span>
+                  {item}
+                </li>
+              ))}
             </ul>
           </div>
 
-          <p className="text-zinc-300 text-sm leading-relaxed">
+          <p className={s.body}>
             At every community event, every airdrop, every allowlist — someone
             has to manually check if people are who they claim to be. It
             doesn&apos;t scale, and it puts all the trust in one person&apos;s
@@ -103,16 +104,16 @@ export default function Home() {
           </p>
         </div>
 
-        {/* How it works */}
-        <div className="pt-16">
+        {/* The solution */}
+        <div className={s.section}>
           <SectionTitle>The solution</SectionTitle>
 
-          <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+          <p className={`${s.body} mb-4`}>
             Think of Discord or Telegram mods. They decide who gets in and
             who gets kicked — but each mod can act alone, decisions happen in
             private channels, and there&apos;s no transparency.
           </p>
-          <p className="text-zinc-300 text-sm leading-relaxed mb-8">
+          <p className={`${s.body} mb-8`}>
             multisig.social works the same way, except with multisig.
             Validators can&apos;t act alone — multiple must agree. Every vote
             is on-chain, visible to everyone. No backroom deals, no single
@@ -129,27 +130,27 @@ export default function Home() {
 
           {/* Two-layer governance */}
           <div className="space-y-4">
-            <div className="bg-zinc-900/50 rounded-xl p-5">
+            <div className={s.card}>
               <div className="flex items-center gap-2 mb-3">
                 <RoleBadge label="Members" color="text-white" bg="bg-zinc-700" />
                 <span className="text-zinc-600 text-xs">elect &amp; kick</span>
                 <Arrow />
                 <RoleBadge label="Validators" color="text-blue-400" bg="bg-blue-500/15" />
               </div>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className={s.muted}>
                 All members vote to elect or kick validators. Majority wins.
                 No time limit — votes accumulate until the threshold is reached.
               </p>
             </div>
 
-            <div className="bg-zinc-900/50 rounded-xl p-5">
+            <div className={s.card}>
               <div className="flex items-center gap-2 mb-3">
                 <RoleBadge label="Validators" color="text-blue-400" bg="bg-blue-500/15" />
                 <span className="text-zinc-600 text-xs">accept &amp; kick</span>
                 <Arrow />
                 <RoleBadge label="Members" color="text-white" bg="bg-zinc-700" />
               </div>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className={s.muted}>
                 Validators decide who joins and who gets kicked. A fixed number
                 must agree — one person alone can&apos;t let someone in or push
                 someone out.
@@ -159,25 +160,21 @@ export default function Home() {
         </div>
 
         {/* Getting started */}
-        <div className="pt-16">
+        <div className={s.section}>
           <SectionTitle>Starting a community</SectionTitle>
 
           <div className="space-y-4">
-            <div className="bg-zinc-900/50 rounded-xl p-5">
-              <h3 className="text-sm font-semibold mb-2">
-                Pick your initial validators
-              </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+            <div className={s.card}>
+              <h3 className={s.cardTitle}>Pick your initial validators</h3>
+              <p className={s.muted}>
                 Choose a few trusted people to bootstrap the group. They accept
                 the first members. From there, governance takes over — members
                 elect new validators, validators accept new members.
               </p>
             </div>
-            <div className="bg-zinc-900/50 rounded-xl p-5">
-              <h3 className="text-sm font-semibold mb-2">
-                Or tie it to an NFT collection
-              </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+            <div className={s.card}>
+              <h3 className={s.cardTitle}>Or tie it to an NFT collection</h3>
+              <p className={s.muted}>
                 For NFT communities, ownership can grant automatic membership.
                 Own an NFT from the collection, you&apos;re in. Members then
                 elect validators through the normal voting process.
@@ -187,7 +184,7 @@ export default function Home() {
         </div>
 
         {/* FAQ */}
-        <div className="pt-16">
+        <div className={s.section}>
           <SectionTitle>FAQ</SectionTitle>
 
           <div className="space-y-4">
@@ -229,7 +226,7 @@ export default function Home() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-pixel text-sm uppercase text-zinc-500 mb-6">
+    <h2 className="font-pixel text-xl uppercase text-zinc-500 mb-6">
       {children}
     </h2>
   );
@@ -241,7 +238,7 @@ function Step({ n, text }: { n: string; text: string }) {
       <span className="font-pixel text-sm text-zinc-600 mt-0.5 w-4 shrink-0">
         {n}
       </span>
-      <p className="text-zinc-300 text-sm leading-relaxed">{text}</p>
+      <p className={s.body}>{text}</p>
     </div>
   );
 }
@@ -262,9 +259,7 @@ function RoleBadge({
   bg: string;
 }) {
   return (
-    <span
-      className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${color} ${bg}`}
-    >
+    <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${color} ${bg}`}>
       {label}
     </span>
   );
@@ -272,7 +267,7 @@ function RoleBadge({
 
 function QA({ q, a }: { q: string; a: string }) {
   return (
-    <div className="bg-zinc-900/50 rounded-xl p-4">
+    <div className={s.card}>
       <p className="text-sm font-semibold mb-1.5">{q}</p>
       <p className="text-zinc-500 text-sm leading-relaxed">{a}</p>
     </div>
