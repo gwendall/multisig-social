@@ -107,11 +107,16 @@ export default function Home() {
         <div className="pt-16">
           <SectionTitle>The solution</SectionTitle>
 
+          <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+            Think of Discord or Telegram mods. They decide who gets in and
+            who gets kicked — but each mod can act alone, decisions happen in
+            private channels, and there&apos;s no transparency.
+          </p>
           <p className="text-zinc-300 text-sm leading-relaxed mb-8">
-            multisig.social replaces the single gatekeeper with a collective
-            decision. Members vouch for each other on-chain. If enough trusted
-            people say you&apos;re legit, the smart contract accepts it. No
-            cold wallet needed. No single point of failure.
+            multisig.social works the same way, except with multisig.
+            Validators can&apos;t act alone — multiple must agree. Every vote
+            is on-chain, visible to everyone. No backroom deals, no single
+            point of failure.
           </p>
 
           {/* Steps */}
