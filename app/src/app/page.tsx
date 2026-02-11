@@ -64,6 +64,14 @@ export default function Home() {
 
         <p className="text-zinc-600 text-sm mt-16">
           On-chain. No admin. No one can cheat.
+          <a
+            href="https://github.com/gwendall/multisig-social"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-zinc-500 hover:text-white transition-colors"
+          >
+            GitHub
+          </a>
         </p>
       </main>
     </div>
