@@ -256,9 +256,9 @@ export default function RegistryPage() {
           </Section>
         )}
 
-        {/* Votes */}
+        {/* Ongoing votes */}
         {proposals.length > 0 && (
-          <Section title="Votes">
+          <Section title="Ongoing votes">
             {proposals.map((p) => (
               <ProposalRow
                 key={p.id.toString()}

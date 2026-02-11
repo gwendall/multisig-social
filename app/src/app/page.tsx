@@ -50,15 +50,21 @@ export default function Home() {
             href={`/registry/${DEMO_REGISTRY}`}
             className="bg-white text-black px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-zinc-200 transition-colors"
           >
-            View community
+            View demo
           </Link>
-          <Link
-            href="/create"
+          <a
+            href="https://github.com/gwendall/multisig-social"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-zinc-400 px-5 py-2.5 rounded-lg font-semibold text-sm hover:text-white transition-colors"
           >
-            Create one
-          </Link>
+            GitHub
+          </a>
         </div>
+        <p className="text-zinc-600 text-xs mt-3">
+          Not live yet. The CryptoPunks Trust page is a demo with mock data.
+          Everything is open source - have a look, give feedback, contribute.
+        </p>
 
         {/* The problem */}
         <div className="pt-20">
@@ -218,7 +224,9 @@ export default function Home() {
 
         {/* Footer */}
         <p className="text-zinc-600 text-sm mt-16">
-          On-chain. No admin. No one can cheat.
+          Open source. Not live yet.
+          <br />
+          Read the code, open an issue, fork it, build on it.
           <a
             href="https://github.com/gwendall/multisig-social"
             target="_blank"
