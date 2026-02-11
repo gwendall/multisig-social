@@ -85,11 +85,11 @@ export interface MockVouch {
 }
 
 export const MOCK_VOUCHERS: Record<string, MockVouch[]> = {
-  "2": [{ address: ACC0, comment: "Met him at ETHDenver, legit punk holder" }],
+  "2": [{ address: ACC0, comment: "Met him at ETHCC, legit punk holder" }],
   "3": [{ address: ACC1, comment: "Been active since day 1, deserves it" }],
   "4": [
-    { address: ACC0, comment: "Caught him selling a Meebit as a Punk" },
-    { address: ACC1, comment: "Yeah not a real one" },
+    { address: ACC0, comment: "Meebit infiltrator. Caught him in a Meebits discord plotting against us" },
+    { address: ACC1, comment: "His punk is just a cover. He's been a Meebit agent all along" },
   ],
 };
 
