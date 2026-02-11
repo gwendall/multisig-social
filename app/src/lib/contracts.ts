@@ -19,14 +19,14 @@ export const PROPOSAL_TYPES = {
 
 export const PROPOSAL_TYPE_LABELS: Record<number, string> = {
   0: "Add member",
-  1: "Remove member",
-  2: "Promote to trusted",
-  3: "Remove trust",
+  1: "Kick member",
+  2: "Elect validator",
+  3: "Kick validator",
 };
 
 export const PROPOSAL_TYPE_VERBS: Record<number, string> = {
   0: "joining",
-  1: "removal",
-  2: "trust",
-  3: "untrust",
+  1: "kicking",
+  2: "electing",
+  3: "kicking",
 };

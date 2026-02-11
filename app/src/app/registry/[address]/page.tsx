@@ -211,7 +211,7 @@ export default function RegistryPage() {
           <p className="text-zinc-500 text-sm mt-2">
             {memberCount.toString()} members
             <span className="mx-2 text-zinc-700">/</span>
-            {validatorCount.toString()} trusted
+            {validatorCount.toString()} validators
           </p>
         </div>
 
@@ -360,9 +360,9 @@ function describeEvent(
     case "MemberRemoved":
       return { text: `${n(ev.args.member)} removed`, color: "text-red-400/70" };
     case "ValidatorAdded":
-      return { text: `${n(ev.args.validator)} became trusted`, color: "text-blue-400/70" };
+      return { text: `${n(ev.args.validator)} elected as validator`, color: "text-blue-400/70" };
     case "ValidatorRemoved":
-      return { text: `${n(ev.args.validator)} lost trust`, color: "text-red-400/70" };
+      return { text: `${n(ev.args.validator)} removed as validator`, color: "text-red-400/70" };
     case "Applied":
       return { text: `${n(ev.args.applicant)} applied`, color: "text-zinc-400" };
     case "AssetLinked":
@@ -602,7 +602,7 @@ function MemberRow({
           )}
           {isValidator && (
             <span className="text-xs bg-blue-500/15 text-blue-400 px-2 py-0.5 rounded-full">
-              trusted
+              validator
             </span>
           )}
         </div>
@@ -622,7 +622,7 @@ function MemberRow({
               disabled={isProposing}
               className="text-xs bg-blue-500/10 text-blue-400/80 px-2.5 py-1.5 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50"
             >
-              Trust
+              Elect
             </button>
           )}
           {isValidator && (
@@ -631,7 +631,7 @@ function MemberRow({
               disabled={isProposing}
               className="text-xs bg-zinc-800 text-zinc-500 px-2.5 py-1.5 rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
             >
-              Untrust
+              Kick
             </button>
           )}
           {!isValidator && (
@@ -640,7 +640,7 @@ function MemberRow({
               disabled={isProposing}
               className="text-xs bg-red-500/10 text-red-400/60 px-2.5 py-1.5 rounded-lg hover:bg-red-500/20 transition-colors disabled:opacity-50"
             >
-              Remove
+              Kick
             </button>
           )}
         </div>
