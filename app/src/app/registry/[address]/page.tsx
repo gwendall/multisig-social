@@ -429,20 +429,8 @@ function describeEvent(
         color: "text-zinc-600",
       };
     }
-    case "ProposalCreated": {
-      const type = ev.args.proposalType !== undefined ? Number(ev.args.proposalType) : undefined;
-      if (type !== undefined) {
-        const verb = ACTIVITY_VERBS[type] || "vote on";
-        return {
-          text: `${n(ev.args.proposer)} proposed to ${verb} ${n(ev.args.target)}`,
-          color: "text-zinc-500",
-        };
-      }
-      return {
-        text: `${n(ev.args.proposer)} started vote on ${n(ev.args.target)}`,
-        color: "text-zinc-500",
-      };
-    }
+    case "ProposalCreated":
+      return null; // redundant — proposer auto-vouches, shown as a Vouched event
     default:
       return null;
   }
