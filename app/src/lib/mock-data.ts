@@ -78,11 +78,19 @@ export const MOCK_PROPOSALS: MockProposal[] = [
   },
 ];
 
-// Who vouched on each mock proposal
-export const MOCK_VOUCHERS: Record<string, `0x${string}`[]> = {
-  "2": [ACC0],
-  "3": [ACC1],
-  "4": [ACC0, ACC1],
+// Who vouched on each mock proposal (with optional comments)
+export interface MockVouch {
+  address: `0x${string}`;
+  comment?: string;
+}
+
+export const MOCK_VOUCHERS: Record<string, MockVouch[]> = {
+  "2": [{ address: ACC0, comment: "Met him at ETHDenver, legit punk holder" }],
+  "3": [{ address: ACC1, comment: "Been active since day 1, deserves it" }],
+  "4": [
+    { address: ACC0, comment: "Caught him selling a Meebit as a Punk" },
+    { address: ACC1, comment: "Yeah not a real one" },
+  ],
 };
 
 export const MOCK_EVENTS: RegistryEvent[] = [

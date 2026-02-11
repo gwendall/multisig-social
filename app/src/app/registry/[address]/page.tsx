@@ -33,6 +33,7 @@ import {
   MOCK_PROPOSALS,
   MOCK_VOUCHERS,
   MOCK_EVENTS,
+  type MockVouch,
 } from "@/lib/mock-data";
 import { PunkAvatar } from "@/components/PunkAvatar";
 
@@ -465,7 +466,7 @@ function ProposalRow({
   onVouch: () => void;
   isVouching: boolean;
   validators: readonly `0x${string}`[];
-  mockVouchers?: `0x${string}`[];
+  mockVouchers?: MockVouch[];
 }) {
   const { data: hasVouched } = useReadContract({
     address: registryAddress,
@@ -494,9 +495,11 @@ function ProposalRow({
     query: { enabled: !mockVouchers && validators.length > 0 },
   });
 
-  const vouchers: `0x${string}`[] = mockVouchers
+  const vouches: MockVouch[] = mockVouchers
     ? mockVouchers
-    : validators.filter((_, i) => voucherChecks.data?.[i]?.result === true);
+    : validators
+        .filter((_, i) => voucherChecks.data?.[i]?.result === true)
+        .map((addr) => ({ address: addr }));
 
   const punkId = assetLink?.linked
     ? assetLink.tokenId
@@ -506,10 +509,15 @@ function ProposalRow({
   const current = Number(proposal.vouchCount);
   const required = Number(proposal.requiredVouches);
   const pct = required > 0 ? Math.round((current / required) * 100) : 0;
-  const verb = PROPOSAL_TYPE_VERBS[proposal.proposalType] || "vote";
-  const isRemoval =
-    proposal.proposalType === 1 || proposal.proposalType === 3;
   const canVouch = isUserValidator && !hasVouched;
+
+  // Per-type color theming
+  const theme = {
+    0: { label: "joining as member", badge: "bg-green-500/15 text-green-400", bar: "bg-green-500/70", btn: "bg-green-500/15 text-green-400 hover:bg-green-500/25" },
+    1: { label: "kicking member", badge: "bg-red-500/15 text-red-400", bar: "bg-red-500/70", btn: "bg-red-500/15 text-red-400 hover:bg-red-500/25" },
+    2: { label: "electing as validator", badge: "bg-blue-500/15 text-blue-400", bar: "bg-blue-500/70", btn: "bg-blue-500/15 text-blue-400 hover:bg-blue-500/25" },
+    3: { label: "kicking validator", badge: "bg-orange-500/15 text-orange-400", bar: "bg-orange-500/70", btn: "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25" },
+  }[proposal.proposalType] || { label: "vote", badge: "bg-zinc-800 text-zinc-400", bar: "bg-zinc-500/70", btn: "bg-zinc-800 text-zinc-400 hover:bg-zinc-700" };
 
   return (
     <div className="bg-zinc-900/40 rounded-xl p-4 mb-3">
@@ -518,14 +526,8 @@ function ProposalRow({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <AddressDisplay address={proposal.target} />
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${
-                isRemoval
-                  ? "bg-red-500/15 text-red-400"
-                  : "bg-zinc-800 text-zinc-400"
-              }`}
-            >
-              {verb}
+            <span className={`text-xs px-2 py-0.5 rounded-full ${theme.badge}`}>
+              {theme.label}
             </span>
           </div>
         </div>
@@ -533,11 +535,7 @@ function ProposalRow({
           <button
             onClick={onVouch}
             disabled={isVouching}
-            className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 ${
-              isRemoval
-                ? "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-                : "bg-green-500/15 text-green-400 hover:bg-green-500/25"
-            }`}
+            className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 ${theme.btn}`}
           >
             Vouch
           </button>
@@ -547,31 +545,11 @@ function ProposalRow({
         )}
       </div>
 
-      {/* Progress + voter avatars */}
-      <div className="flex items-center gap-3">
-        {vouchers.length > 0 && (
-          <div className="flex -space-x-1.5">
-            {vouchers.map((addr) => {
-              const vPunkId =
-                DEMO_PUNKS[addr] !== undefined
-                  ? BigInt(DEMO_PUNKS[addr])
-                  : undefined;
-              return (
-                <PunkAvatar
-                  key={addr}
-                  punkId={vPunkId}
-                  size={20}
-                  className="rounded-full ring-1 ring-zinc-900"
-                />
-              );
-            })}
-          </div>
-        )}
+      {/* Progress */}
+      <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${
-              isRemoval ? "bg-red-500/70" : "bg-green-500/70"
-            }`}
+            className={`h-full rounded-full transition-all ${theme.bar}`}
             style={{ width: `${Math.min(pct, 100)}%` }}
           />
         </div>
@@ -579,6 +557,37 @@ function ProposalRow({
           {current}/{required}
         </span>
       </div>
+
+      {/* Voucher comments */}
+      {vouches.length > 0 && (
+        <div className="space-y-2">
+          {vouches.map((v) => {
+            const vPunkId =
+              DEMO_PUNKS[v.address] !== undefined
+                ? BigInt(DEMO_PUNKS[v.address])
+                : undefined;
+            return (
+              <div key={v.address} className="flex items-start gap-2">
+                <PunkAvatar
+                  punkId={vPunkId}
+                  size={20}
+                  className="rounded-full ring-1 ring-zinc-900 shrink-0 mt-0.5"
+                />
+                <div className="min-w-0">
+                  <span className="text-xs font-medium text-zinc-400">
+                    {getDisplayName(v.address)}
+                  </span>
+                  {v.comment && (
+                    <p className="text-xs text-zinc-600 leading-relaxed">
+                      {v.comment}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
