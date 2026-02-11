@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { COLORS } from "@/lib/constants";
 import { loadSilkscreenFont, silkscreenFontConfig } from "@/lib/fonts";
 
 export const size = {
@@ -20,7 +19,7 @@ export default async function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: COLORS.punkBlueDark,
+          backgroundColor: "#0a0a0a",
         }}
       >
         <div

@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { COLORS } from "./constants";
 import { loadSilkscreenFont, silkscreenFontConfig } from "./fonts";
 
 interface OGImageOptions {
@@ -36,7 +35,7 @@ export async function generateOGImage(
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: COLORS.punkBlueDark,
+          backgroundColor: "#0a0a0a",
           padding: "60px",
         }}
       >
