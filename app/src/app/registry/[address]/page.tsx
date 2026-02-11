@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   useAccount,
   useReadContract,
+  useReadContracts,
   useWriteContract,
   useWaitForTransactionReceipt,
   useEnsName,
@@ -29,6 +30,8 @@ import {
   MOCK_MEMBERS,
   MOCK_VALIDATORS,
   MOCK_APPLICANTS,
+  MOCK_PROPOSALS,
+  MOCK_VOUCHERS,
   MOCK_EVENTS,
 } from "@/lib/mock-data";
 import { PunkAvatar } from "@/components/PunkAvatar";
@@ -189,6 +192,7 @@ export default function RegistryPage() {
       ? MOCK_APPLICANTS
       : [];
   const events = liveEvents.length > 0 ? liveEvents : useMock ? MOCK_EVENTS : [];
+  const proposals = activeProposals.length > 0 ? activeProposals : useMock ? MOCK_PROPOSALS : [];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -252,9 +256,9 @@ export default function RegistryPage() {
         )}
 
         {/* Votes */}
-        {activeProposals.length > 0 && (
+        {proposals.length > 0 && (
           <Section title="Votes">
-            {activeProposals.map((p) => (
+            {proposals.map((p) => (
               <ProposalRow
                 key={p.id.toString()}
                 proposal={p}
@@ -263,6 +267,8 @@ export default function RegistryPage() {
                 userAddress={userAddress}
                 onVouch={() => vouch(p.id)}
                 isVouching={isVouching}
+                validators={validators}
+                mockVouchers={useMock ? MOCK_VOUCHERS[p.id.toString()] : undefined}
               />
             ))}
           </Section>
@@ -442,6 +448,8 @@ function ProposalRow({
   userAddress,
   onVouch,
   isVouching,
+  validators,
+  mockVouchers,
 }: {
   proposal: {
     id: bigint;
@@ -456,6 +464,8 @@ function ProposalRow({
   userAddress: `0x${string}` | undefined;
   onVouch: () => void;
   isVouching: boolean;
+  validators: readonly `0x${string}`[];
+  mockVouchers?: `0x${string}`[];
 }) {
   const { data: hasVouched } = useReadContract({
     address: registryAddress,
@@ -470,6 +480,23 @@ function ProposalRow({
     functionName: "getAssetLink",
     args: [proposal.target],
   });
+
+  // Check which validators have vouched (live mode)
+  const voucherChecks = useReadContracts({
+    contracts: mockVouchers
+      ? [] // skip in mock mode
+      : validators.map((v) => ({
+          address: registryAddress,
+          abi: trustRegistryAbi,
+          functionName: "hasVouched" as const,
+          args: [proposal.id, v],
+        })),
+    query: { enabled: !mockVouchers && validators.length > 0 },
+  });
+
+  const vouchers: `0x${string}`[] = mockVouchers
+    ? mockVouchers
+    : validators.filter((_, i) => voucherChecks.data?.[i]?.result === true);
 
   const punkId = assetLink?.linked
     ? assetLink.tokenId
@@ -520,8 +547,26 @@ function ProposalRow({
         )}
       </div>
 
-      {/* Progress */}
+      {/* Progress + voter avatars */}
       <div className="flex items-center gap-3">
+        {vouchers.length > 0 && (
+          <div className="flex -space-x-1.5">
+            {vouchers.map((addr) => {
+              const vPunkId =
+                DEMO_PUNKS[addr] !== undefined
+                  ? BigInt(DEMO_PUNKS[addr])
+                  : undefined;
+              return (
+                <PunkAvatar
+                  key={addr}
+                  punkId={vPunkId}
+                  size={20}
+                  className="rounded-full ring-1 ring-zinc-900"
+                />
+              );
+            })}
+          </div>
+        )}
         <div className="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${
