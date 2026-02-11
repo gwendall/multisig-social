@@ -22,8 +22,15 @@ import { usePropose, useVouchFor } from "@/hooks/useVouch";
 import { useActiveProposals } from "@/hooks/useActiveProposals";
 import { useRegistryEvents } from "@/hooks/useRegistryEvents";
 import { trustRegistryAbi } from "@/lib/abi";
-import { PROPOSAL_TYPES, PROPOSAL_TYPE_VERBS } from "@/lib/contracts";
+import { PROPOSAL_TYPES, PROPOSAL_TYPE_VERBS, DEMO_REGISTRY } from "@/lib/contracts";
 import { DEMO_NAMES, DEMO_PUNKS } from "@/lib/demo-names";
+import {
+  MOCK_INFO,
+  MOCK_MEMBERS,
+  MOCK_VALIDATORS,
+  MOCK_APPLICANTS,
+  MOCK_EVENTS,
+} from "@/lib/mock-data";
 import { PunkAvatar } from "@/components/PunkAvatar";
 
 // ---------------------------------------------------------------------------
@@ -100,6 +107,8 @@ export default function RegistryPage() {
   const params = useParams();
   const registryAddress = params.address as `0x${string}`;
   const { address: userAddress } = useAccount();
+  const isDemoRegistry =
+    registryAddress.toLowerCase() === DEMO_REGISTRY.toLowerCase();
 
   // Read state
   const info = useRegistryInfo(registryAddress);
@@ -130,7 +139,7 @@ export default function RegistryPage() {
   });
 
   const activeProposals = useActiveProposals(registryAddress);
-  const { events } = useRegistryEvents(registryAddress);
+  const { events: liveEvents } = useRegistryEvents(registryAddress);
 
   // Write actions
   const { propose, isPending: isProposing } = usePropose(registryAddress);
@@ -154,9 +163,32 @@ export default function RegistryPage() {
     });
   };
 
-  const validatorSet = new Set(validatorList || []);
-  const applicantArr = applicantList || [];
-  const members = memberList || [];
+  // Use mock data as fallback for demo registry when contract reads fail
+  const hasLiveData = memberList && memberList.length > 0;
+  const useMock = isDemoRegistry && !hasLiveData;
+
+  const communityName = info.name || (useMock ? MOCK_INFO.name : "...");
+  const memberCount = info.memberCount ?? (useMock ? MOCK_INFO.memberCount : 0);
+  const validatorCount =
+    info.validatorCount ?? (useMock ? MOCK_INFO.validatorCount : 0);
+
+  const members = hasLiveData
+    ? memberList
+    : useMock
+      ? MOCK_MEMBERS
+      : [];
+  const validators = validatorList?.length
+    ? validatorList
+    : useMock
+      ? MOCK_VALIDATORS
+      : [];
+  const validatorSet = new Set(validators);
+  const applicantArr = applicantList?.length
+    ? applicantList
+    : useMock
+      ? MOCK_APPLICANTS
+      : [];
+  const events = liveEvents.length > 0 ? liveEvents : useMock ? MOCK_EVENTS : [];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -174,17 +206,17 @@ export default function RegistryPage() {
         {/* Community header */}
         <div className="text-center mb-8">
           <h1 className="font-pixel text-2xl uppercase">
-            {info.name || "..."}
+            {communityName}
           </h1>
           <p className="text-zinc-500 text-sm mt-2">
-            {info.memberCount?.toString() || "0"} members
+            {memberCount.toString()} members
             <span className="mx-2 text-zinc-700">/</span>
-            {info.validatorCount?.toString() || "0"} trusted
+            {validatorCount.toString()} trusted
           </p>
         </div>
 
         {/* Join */}
-        {userAddress && !userIsMember && !userHasApplied && (
+        {userAddress && !userIsMember && !userHasApplied && !useMock && (
           <button
             onClick={handleApply}
             disabled={isApplying || applyConfirming}
@@ -209,10 +241,10 @@ export default function RegistryPage() {
             {applicantArr.map((addr) => (
               <ApplicantRow
                 key={addr}
-                address={addr}
+                address={addr as `0x${string}`}
                 registryAddress={registryAddress}
                 isUserValidator={!!isUserValidator}
-                onAccept={() => propose(PROPOSAL_TYPES.ADD_MEMBER, addr)}
+                onAccept={() => propose(PROPOSAL_TYPES.ADD_MEMBER, addr as `0x${string}`)}
                 isProposing={isProposing}
               />
             ))}
@@ -553,6 +585,7 @@ function MemberRow({
       : undefined;
 
   const linkedPunkId = assetLink?.linked ? assetLink.tokenId : undefined;
+  const demoPunkId = DEMO_PUNKS[address];
 
   return (
     <div className="flex items-center gap-3 py-3 px-3 rounded-xl hover:bg-white/5 transition-colors group">
@@ -562,10 +595,9 @@ function MemberRow({
           <span className="text-sm font-semibold truncate">
             {displayName || shortenAddress(address)}
           </span>
-          {linkedPunkId !== undefined && (
+          {(linkedPunkId !== undefined || demoPunkId !== undefined) && (
             <span className="text-xs text-zinc-600">
-              #{linkedPunkId.toString()}
-              {!isVerified && " ?"}
+              #{(linkedPunkId ?? BigInt(demoPunkId!)).toString()}
             </span>
           )}
           {isValidator && (
