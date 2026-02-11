@@ -5,7 +5,7 @@ import Link from "next/link";
 import { DEMO_REGISTRY } from "@/lib/contracts";
 import { PunkAvatar } from "@/components/PunkAvatar";
 
-const FEATURED_PUNKS = [BigInt(2113), BigInt(4736), BigInt(6507), BigInt(6843), BigInt(1477)];
+const FEATURED_PUNKS = [BigInt(2113), BigInt(4736), BigInt(6507), BigInt(6843), BigInt(1477), BigInt(3466)];
 
 // Shared styles
 const s = {
@@ -157,6 +157,15 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          {/* Composability */}
+          <p className={`${s.body} mt-8`}>
+            The result is on-chain. Not in a spreadsheet, not in a Discord role,
+            not in someone&apos;s head. Any smart contract, any dapp, any agent
+            can read who&apos;s verified and act on it - airdrops, allowlists,
+            token-gating, governance. Human verification, made composable and
+            scalable.
+          </p>
         </div>
 
         {/* Getting started */}

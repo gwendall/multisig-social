@@ -7,17 +7,18 @@ const ACC2 = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC" as const;
 const ACC3 = "0x90F79bf6EB2c4f870365E785982E1f101E93b906" as const;
 const ACC4 = "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65" as const;
 const ACC5 = "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc" as const;
+const ACC6 = "0x976EA74026E726554dB657fA54763abd0C3a0aa9" as const;
 
 export const MOCK_INFO = {
   name: "CryptoPunks Trust",
-  memberCount: 5,
+  memberCount: 6,
   validatorCount: 3,
   memberThreshold: 2,
   validatorThreshold: 67,
   proposalDuration: 604800,
 };
 
-export const MOCK_MEMBERS: `0x${string}`[] = [ACC0, ACC1, ACC2, ACC3, ACC4];
+export const MOCK_MEMBERS: `0x${string}`[] = [ACC0, ACC1, ACC2, ACC3, ACC4, ACC6];
 
 export const MOCK_VALIDATORS: `0x${string}`[] = [ACC0, ACC1, ACC2];
 
@@ -53,7 +54,7 @@ export const MOCK_PROPOSALS: MockProposal[] = [
     vouchCount: BigInt(1),
     requiredVouches: BigInt(2),
   },
-  // Electing a new validator - 1/4 member majority needed (ceil(5*67/100) = 4)
+  // Electing a new validator - 1/5 member majority needed (ceil(6*67/100) = 5)
   {
     id: BigInt(3),
     proposalType: 2, // ADD_VALIDATOR
@@ -63,9 +64,9 @@ export const MOCK_PROPOSALS: MockProposal[] = [
     expiresAt: NEVER_EXPIRES,
     executed: false,
     vouchCount: BigInt(1),
-    requiredVouches: BigInt(4),
+    requiredVouches: BigInt(5),
   },
-  // Kicking a validator - 1/4 member majority needed (ceil(5*67/100) = 4)
+  // Kicking a validator - 1/5 member majority needed (ceil(6*67/100) = 5)
   {
     id: BigInt(4),
     proposalType: 3, // REMOVE_VALIDATOR
@@ -75,7 +76,7 @@ export const MOCK_PROPOSALS: MockProposal[] = [
     expiresAt: NEVER_EXPIRES,
     executed: false,
     vouchCount: BigInt(1),
-    requiredVouches: BigInt(4),
+    requiredVouches: BigInt(5),
   },
 ];
 
@@ -107,8 +108,9 @@ export const MOCK_EVENTS: RegistryEvent[] = [
   { eventName: "AssetLinked", args: { member: ACC2, tokenId: BigInt(6507) }, blockNumber: BigInt(10), transactionHash: "0xaaa3", timestamp: now - 2100 },
   { eventName: "AssetLinked", args: { member: ACC1, tokenId: BigInt(4736) }, blockNumber: BigInt(9), transactionHash: "0xaaa4", timestamp: now - 2400 },
   { eventName: "AssetLinked", args: { member: ACC0, tokenId: BigInt(2113) }, blockNumber: BigInt(8), transactionHash: "0xaaa5", timestamp: now - 2700 },
-  { eventName: "AssetLinked", args: { member: ACC4, tokenId: BigInt(1477) }, blockNumber: BigInt(7), transactionHash: "0xaaa6", timestamp: now - 3000 },
-  { eventName: "ProposalExecuted", args: { proposalId: BigInt(1) }, blockNumber: BigInt(6), transactionHash: "0xaaa7", timestamp: now - 3600 },
+  { eventName: "AssetLinked", args: { member: ACC6, tokenId: BigInt(3466) }, blockNumber: BigInt(7), transactionHash: "0xaaa6a", timestamp: now - 2900 },
+  { eventName: "AssetLinked", args: { member: ACC4, tokenId: BigInt(1477) }, blockNumber: BigInt(6), transactionHash: "0xaaa6", timestamp: now - 3000 },
+  { eventName: "ProposalExecuted", args: { proposalId: BigInt(1) }, blockNumber: BigInt(5), transactionHash: "0xaaa7", timestamp: now - 3600 },
   { eventName: "Vouched", args: { validator: ACC1, proposalId: BigInt(1) }, blockNumber: BigInt(5), transactionHash: "0xaaa8", timestamp: now - 3700 },
   { eventName: "Vouched", args: { validator: ACC0, proposalId: BigInt(1) }, blockNumber: BigInt(4), transactionHash: "0xaaa9", timestamp: now - 3800 },
   { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC4, proposalId: BigInt(1), proposalType: 0 }, blockNumber: BigInt(4), transactionHash: "0xaaa9", timestamp: now - 3800 },
