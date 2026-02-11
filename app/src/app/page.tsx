@@ -105,13 +105,13 @@ export default function Home() {
 
         {/* How it works */}
         <div className="pt-16">
-          <SectionTitle>How we solve it</SectionTitle>
+          <SectionTitle>The solution</SectionTitle>
 
           <p className="text-zinc-300 text-sm leading-relaxed mb-8">
-            Instead of one gatekeeper verifying everyone, the community does
-            it collectively. Members vouch for each other on-chain. If enough
-            trusted people say you&apos;re legit, the smart contract accepts
-            it. No cold wallet needed. No single point of failure.
+            multisig.social replaces the single gatekeeper with a collective
+            decision. Members vouch for each other on-chain. If enough trusted
+            people say you&apos;re legit, the smart contract accepts it. No
+            cold wallet needed. No single point of failure.
           </p>
 
           {/* Steps */}
