@@ -66,7 +66,7 @@ export default function Home() {
 
           <p className={`${s.body} mb-4`}>
             Most NFT holders keep their assets on a cold wallet. They
-            don&apos;t want to sign anything with it — not a transaction,
+            don&apos;t want to sign anything with it - not a transaction,
             not a delegation, not even a message. And they&apos;re right.
             Every signature is a risk.
           </p>
@@ -97,7 +97,7 @@ export default function Home() {
           </div>
 
           <p className={s.body}>
-            At every community event, every airdrop, every allowlist — someone
+            At every community event, every airdrop, every allowlist - someone
             has to manually check if people are who they claim to be. It
             doesn&apos;t scale, and it puts all the trust in one person&apos;s
             hands.
@@ -110,12 +110,12 @@ export default function Home() {
 
           <p className={`${s.body} mb-4`}>
             Think of Discord or Telegram mods. They decide who gets in and
-            who gets kicked — but each mod can act alone, decisions happen in
+            who gets kicked - but each mod can act alone, decisions happen in
             private channels, and there&apos;s no transparency.
           </p>
           <p className={`${s.body} mb-8`}>
             multisig.social works the same way, except with multisig.
-            Validators can&apos;t act alone — multiple must agree. Every vote
+            Validators can&apos;t act alone - multiple must agree. Every vote
             is on-chain, visible to everyone. No backroom deals, no single
             point of failure.
           </p>
@@ -123,7 +123,7 @@ export default function Home() {
           {/* Steps */}
           <div className="space-y-3 mb-10">
             <Step n="1" text="Someone applies to join a community" />
-            <Step n="2" text="Validators vouch for them — enough vouches, they're a member" />
+            <Step n="2" text="Validators vouch for them - enough vouches, they're a member" />
             <Step n="3" text="Members elect validators by majority vote" />
             <Step n="4" text="Validators accept or kick members by threshold (e.g. 3 must agree)" />
           </div>
@@ -139,7 +139,7 @@ export default function Home() {
               </div>
               <p className={s.muted}>
                 All members vote to elect or kick validators. Majority wins.
-                No time limit — votes accumulate until the threshold is reached.
+                No time limit - votes accumulate until the threshold is reached.
               </p>
             </div>
 
@@ -152,7 +152,7 @@ export default function Home() {
               </div>
               <p className={s.muted}>
                 Validators decide who joins and who gets kicked. A fixed number
-                must agree — one person alone can&apos;t let someone in or push
+                must agree - one person alone can&apos;t let someone in or push
                 someone out.
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function Home() {
               <h3 className={s.cardTitle}>Pick your initial validators</h3>
               <p className={s.muted}>
                 Choose a few trusted people to bootstrap the group. They accept
-                the first members. From there, governance takes over — members
+                the first members. From there, governance takes over - members
                 elect new validators, validators accept new members.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function Home() {
             />
             <QA
               q="What are validators?"
-              a="Trusted members elected by the community. They decide who joins and who gets kicked — like an elected council. No one appoints them, they're voted in."
+              a="Trusted members elected by the community. They decide who joins and who gets kicked - like an elected council. No one appoints them, they're voted in."
             />
             <QA
               q="Can a single person abuse their power?"

@@ -1,4 +1,4 @@
-// Static mock data for demo — used when no on-chain contract is reachable (e.g. Vercel)
+// Static mock data for demo - used when no on-chain contract is reachable (e.g. Vercel)
 import type { RegistryEvent } from "@/hooks/useRegistryEvents";
 
 const ACC0 = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as const;

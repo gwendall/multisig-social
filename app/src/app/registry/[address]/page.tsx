@@ -613,7 +613,7 @@ function MemberRow({
         )}
       </div>
 
-      {/* Actions — always visible for validators */}
+      {/* Actions - always visible for validators */}
       {isUserValidator && (
         <div className="flex gap-1.5 shrink-0">
           {!isValidator && (
