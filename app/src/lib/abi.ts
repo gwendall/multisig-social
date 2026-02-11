@@ -1,0 +1,48 @@
+export const trustRegistryAbi = [
+  // Read
+  { type: "function", name: "name", inputs: [], outputs: [{ type: "string" }], stateMutability: "view" },
+  { type: "function", name: "memberThreshold", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "validatorThresholdPct", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "proposalDuration", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "proposalCount", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "isValidator", inputs: [{ name: "", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "isMember", inputs: [{ name: "", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "getValidators", inputs: [], outputs: [{ type: "address[]" }], stateMutability: "view" },
+  { type: "function", name: "getMembers", inputs: [], outputs: [{ type: "address[]" }], stateMutability: "view" },
+  { type: "function", name: "getApplicants", inputs: [], outputs: [{ type: "address[]" }], stateMutability: "view" },
+  { type: "function", name: "hasApplied", inputs: [{ name: "", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "validatorCount", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "memberCount", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "applicantCount", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getProposal", inputs: [{ name: "_proposalId", type: "uint256" }], outputs: [{ type: "tuple", components: [{ name: "proposalType", type: "uint8" }, { name: "target", type: "address" }, { name: "proposer", type: "address" }, { name: "createdAt", type: "uint40" }, { name: "expiresAt", type: "uint40" }, { name: "executed", type: "bool" }] }], stateMutability: "view" },
+  { type: "function", name: "getVouchCount", inputs: [{ name: "_proposalId", type: "uint256" }], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getRequiredVouches", inputs: [{ name: "_type", type: "uint8" }], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "hasVouched", inputs: [{ name: "", type: "uint256" }, { name: "", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "getAssetLink", inputs: [{ name: "_member", type: "address" }], outputs: [{ type: "tuple", components: [{ name: "tokenId", type: "uint256" }, { name: "ownerWallet", type: "address" }, { name: "linked", type: "bool" }] }], stateMutability: "view" },
+  { type: "function", name: "isVerifiedOwner", inputs: [{ name: "_member", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  // Write
+  { type: "function", name: "propose", inputs: [{ name: "_type", type: "uint8" }, { name: "_target", type: "address" }], outputs: [{ type: "uint256" }], stateMutability: "nonpayable" },
+  { type: "function", name: "vouch", inputs: [{ name: "_proposalId", type: "uint256" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "applyToJoin", inputs: [], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "cancelApplication", inputs: [], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "linkAsset", inputs: [{ name: "_tokenId", type: "uint256" }, { name: "_member", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "unlinkAsset", inputs: [{ name: "_member", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  // Events
+  { type: "event", name: "ProposalCreated", inputs: [{ name: "proposalId", type: "uint256", indexed: true }, { name: "proposalType", type: "uint8", indexed: false }, { name: "target", type: "address", indexed: true }, { name: "proposer", type: "address", indexed: true }] },
+  { type: "event", name: "Vouched", inputs: [{ name: "proposalId", type: "uint256", indexed: true }, { name: "validator", type: "address", indexed: true }, { name: "newVouchCount", type: "uint256", indexed: false }] },
+  { type: "event", name: "ProposalExecuted", inputs: [{ name: "proposalId", type: "uint256", indexed: true }, { name: "proposalType", type: "uint8", indexed: false }, { name: "target", type: "address", indexed: true }] },
+  { type: "event", name: "MemberAdded", inputs: [{ name: "member", type: "address", indexed: true }] },
+  { type: "event", name: "MemberRemoved", inputs: [{ name: "member", type: "address", indexed: true }] },
+  { type: "event", name: "ValidatorAdded", inputs: [{ name: "validator", type: "address", indexed: true }] },
+  { type: "event", name: "ValidatorRemoved", inputs: [{ name: "validator", type: "address", indexed: true }] },
+  { type: "event", name: "Applied", inputs: [{ name: "applicant", type: "address", indexed: true }] },
+  { type: "event", name: "AssetLinked", inputs: [{ name: "member", type: "address", indexed: true }, { name: "tokenId", type: "uint256", indexed: false }, { name: "ownerWallet", type: "address", indexed: true }] },
+] as const;
+
+export const trustRegistryFactoryAbi = [
+  { type: "function", name: "implementation", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+  { type: "function", name: "registryCount", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "view" },
+  { type: "function", name: "getRegistries", inputs: [], outputs: [{ type: "address[]" }], stateMutability: "view" },
+  { type: "function", name: "createRegistry", inputs: [{ name: "_name", type: "string" }, { name: "_initialValidators", type: "address[]" }, { name: "_memberThreshold", type: "uint256" }, { name: "_validatorThresholdPct", type: "uint256" }, { name: "_proposalDuration", type: "uint256" }, { name: "_checker", type: "address" }], outputs: [{ type: "address" }], stateMutability: "nonpayable" },
+  { type: "event", name: "RegistryCreated", inputs: [{ name: "registry", type: "address", indexed: true }, { name: "name", type: "string", indexed: false }, { name: "creator", type: "address", indexed: true }] },
+] as const;

@@ -1,0 +1,12 @@
+{
+  "name": "multisig-social",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter app dev",
+    "build": "pnpm --filter app build",
+    "build:contracts": "cd contracts && forge build",
+    "test:contracts": "cd contracts && forge test -vvv",
+    "deploy:mainnet": "cd contracts && forge script script/Deploy.s.sol --rpc-url mainnet --broadcast --verify",
+    "deploy:base": "cd contracts && forge script script/Deploy.s.sol --rpc-url base --broadcast --verify"
+  }
+}

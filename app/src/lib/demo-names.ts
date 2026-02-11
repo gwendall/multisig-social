@@ -1,0 +1,18 @@
+// Display names for demo (Anvil default accounts)
+// Punk IDs: Sean Bonner #4736, Sergito #6507, Gwendall #2113, Arkaydeus #6843, Tschuuuly #1477
+
+export const DEMO_NAMES: Record<string, string> = {
+  "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "Gwendall",
+  "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "Sean Bonner",
+  "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": "Sergito",
+  "0x90F79bf6EB2c4f870365E785982E1f101E93b906": "Arkaydeus",
+  "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": "Tschuuuly",
+};
+
+export const DEMO_PUNKS: Record<string, number> = {
+  "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": 2113,
+  "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 4736,
+  "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 6507,
+  "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 6843,
+  "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 1477,
+};
