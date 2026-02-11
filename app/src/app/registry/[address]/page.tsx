@@ -325,12 +325,12 @@ export default function RegistryPage() {
           </div>
         </Section>
 
-        {/* Activity */}
+        {/* Activity — build proposal lookup from active proposals + ProposalCreated events */}
         {events.length > 0 && (
           <Section title="Activity">
             <div className="space-y-2">
               {events.slice(0, 30).map((ev, i) => {
-                const desc = describeEvent(ev);
+                const desc = describeEvent(ev, proposals, events);
                 if (!desc) return null;
                 return (
                   <div
@@ -356,10 +356,38 @@ export default function RegistryPage() {
 // Event descriptions
 // ---------------------------------------------------------------------------
 
+const ACTIVITY_VERBS: Record<number, string> = {
+  0: "accept",
+  1: "kick",
+  2: "elect",
+  3: "remove",
+};
+
+const ACTIVITY_PAST: Record<number, string> = {
+  0: "accepted as member",
+  1: "kicked",
+  2: "elected as validator",
+  3: "removed as validator",
+};
+
 function describeEvent(
-  ev: { eventName: string; args: Record<string, unknown>; timestamp?: number }
+  ev: { eventName: string; args: Record<string, unknown>; timestamp?: number },
+  proposals: readonly { id: bigint; proposalType: number; target: `0x${string}` }[],
+  allEvents: readonly { eventName: string; args: Record<string, unknown> }[],
 ): { text: string; color: string } | null {
   const n = (addr: unknown) => getDisplayName(String(addr));
+
+  // Look up proposal info by ID — first from active proposals, then from ProposalCreated events
+  const findProposal = (id: unknown): { proposalType: number; target: string } | undefined => {
+    const idStr = String(id);
+    const active = proposals.find((p) => p.id.toString() === idStr);
+    if (active) return { proposalType: active.proposalType, target: active.target };
+    const created = allEvents.find(
+      (e) => e.eventName === "ProposalCreated" && String(e.args.proposalId) === idStr && e.args.proposalType !== undefined
+    );
+    if (created) return { proposalType: Number(created.args.proposalType), target: String(created.args.target) };
+    return undefined;
+  };
 
   switch (ev.eventName) {
     case "MemberAdded":
@@ -371,24 +399,50 @@ function describeEvent(
     case "ValidatorRemoved":
       return { text: `${n(ev.args.validator)} removed as validator`, color: "text-red-400/70" };
     case "Applied":
-      return { text: `${n(ev.args.applicant)} applied`, color: "text-zinc-400" };
+      return { text: `${n(ev.args.applicant)} applied to join`, color: "text-zinc-400" };
     case "AssetLinked":
       return {
         text: `${n(ev.args.member)} linked Punk #${ev.args.tokenId}`,
         color: "text-zinc-500",
       };
-    case "ProposalExecuted":
+    case "ProposalExecuted": {
+      const p = findProposal(ev.args.proposalId);
+      if (p) {
+        return {
+          text: `${n(p.target)} ${ACTIVITY_PAST[p.proposalType] || "voted on"}`,
+          color: "text-green-400/70",
+        };
+      }
       return { text: `Vote #${ev.args.proposalId} passed`, color: "text-green-400/70" };
-    case "Vouched":
+    }
+    case "Vouched": {
+      const p = findProposal(ev.args.proposalId);
+      if (p) {
+        const verb = ACTIVITY_VERBS[p.proposalType] || "vote on";
+        return {
+          text: `${n(ev.args.validator)} vouched to ${verb} ${n(p.target)}`,
+          color: "text-zinc-600",
+        };
+      }
       return {
         text: `${n(ev.args.validator)} vouched on #${ev.args.proposalId}`,
         color: "text-zinc-600",
       };
-    case "ProposalCreated":
+    }
+    case "ProposalCreated": {
+      const type = ev.args.proposalType !== undefined ? Number(ev.args.proposalType) : undefined;
+      if (type !== undefined) {
+        const verb = ACTIVITY_VERBS[type] || "vote on";
+        return {
+          text: `${n(ev.args.proposer)} proposed to ${verb} ${n(ev.args.target)}`,
+          color: "text-zinc-500",
+        };
+      }
       return {
         text: `${n(ev.args.proposer)} started vote on ${n(ev.args.target)}`,
         color: "text-zinc-500",
       };
+    }
     default:
       return null;
   }

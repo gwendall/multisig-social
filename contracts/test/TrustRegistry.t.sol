@@ -496,6 +496,151 @@ contract TrustRegistryTest is Test {
         assertEq(factory.registryCount(), 3);
     }
 
+    // ──────────────────── Member Governance ────────────────────
+    // Members elect and kick validators. Validators manage members.
+
+    function test_memberCanProposeAddValidator() public {
+        _addMember(dave); // dave is member, not validator
+
+        vm.prank(dave);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+        assertEq(registry.vouchCount(id), 1); // auto-vouch
+        assertFalse(registry.isValidator(dave));
+    }
+
+    function test_memberCanProposeRemoveValidator() public {
+        _addMember(dave);
+
+        vm.prank(dave);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.REMOVE_VALIDATOR, charlie);
+        assertEq(registry.vouchCount(id), 1);
+        assertTrue(registry.isValidator(charlie)); // not yet removed
+    }
+
+    function test_memberCanVouchOnValidatorProposal() public {
+        _addMember(dave);
+
+        vm.prank(alice); // alice is both member + validator
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+
+        vm.prank(dave); // member, not validator
+        registry.vouch(id);
+        assertEq(registry.vouchCount(id), 2);
+    }
+
+    function test_nonMemberCannotProposeValidator() public {
+        _addMember(dave);
+
+        vm.prank(outsider);
+        vm.expectRevert(TrustRegistry.NotMember.selector);
+        registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+    }
+
+    function test_nonMemberCannotVouchOnValidatorProposal() public {
+        _addMember(dave);
+
+        vm.prank(alice);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+
+        vm.prank(outsider);
+        vm.expectRevert(TrustRegistry.NotMember.selector);
+        registry.vouch(id);
+    }
+
+    function test_validatorProposalNeverExpires() public {
+        _addMember(dave);
+
+        vm.prank(alice);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+
+        // Warp a year into the future — way past proposalDuration
+        vm.warp(block.timestamp + 365 days);
+
+        vm.prank(bob);
+        registry.vouch(id); // should NOT revert
+        assertEq(registry.vouchCount(id), 2);
+    }
+
+    function test_memberProposalStillExpires() public {
+        vm.prank(alice);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_MEMBER, dave);
+
+        vm.warp(block.timestamp + 8 days);
+
+        vm.prank(bob);
+        vm.expectRevert(TrustRegistry.ProposalExpired.selector);
+        registry.vouch(id);
+    }
+
+    function test_validatorThresholdBasedOnMemberCount() public {
+        _addMember(dave);
+        _addMember(eve);
+        // 5 members, 3 validators, 67% threshold
+        // Required: ceil(5 * 67 / 100) = ceil(3.35) = (5*67+99)/100 = 434/100 = 4
+        assertEq(registry.getRequiredVouches(TrustRegistry.ProposalType.ADD_VALIDATOR), 4);
+        assertEq(registry.getRequiredVouches(TrustRegistry.ProposalType.REMOVE_VALIDATOR), 4);
+        // Member proposals still use memberThreshold = 2
+        assertEq(registry.getRequiredVouches(TrustRegistry.ProposalType.ADD_MEMBER), 2);
+    }
+
+    function test_memberCannotProposeMemberChange() public {
+        _addMember(dave);
+
+        vm.prank(dave); // member, not validator
+        vm.expectRevert(TrustRegistry.NotValidator.selector);
+        registry.propose(TrustRegistry.ProposalType.ADD_MEMBER, eve);
+    }
+
+    function test_memberCannotVouchOnMemberProposal() public {
+        _addMember(dave);
+
+        vm.prank(alice); // validator
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_MEMBER, eve);
+
+        vm.prank(dave); // member, not validator
+        vm.expectRevert(TrustRegistry.NotValidator.selector);
+        registry.vouch(id);
+    }
+
+    function test_fullValidatorElection() public {
+        _addMember(dave);
+        _addMember(eve);
+        // 5 members, 67% → need 4 vouches
+
+        vm.prank(alice);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.ADD_VALIDATOR, dave);
+        // auto-vouch: 1
+
+        vm.prank(bob);
+        registry.vouch(id); // 2
+
+        vm.prank(charlie);
+        registry.vouch(id); // 3
+        assertFalse(registry.isValidator(dave)); // not yet — need 4
+
+        vm.prank(eve);
+        registry.vouch(id); // 4 — threshold met
+        assertTrue(registry.isValidator(dave));
+        assertEq(registry.validatorCount(), 4);
+    }
+
+    function test_fullValidatorRemoval() public {
+        // 3 members = 3 validators, 67% → ceil(3*67/100) = 3 vouches
+        vm.prank(alice);
+        uint256 id = registry.propose(TrustRegistry.ProposalType.REMOVE_VALIDATOR, charlie);
+        // auto-vouch: 1
+
+        vm.prank(bob);
+        registry.vouch(id); // 2
+        assertTrue(registry.isValidator(charlie)); // not yet
+
+        vm.prank(charlie); // charlie can vote to remove himself (he's a member)
+        registry.vouch(id); // 3 — threshold met
+        assertFalse(registry.isValidator(charlie));
+        assertTrue(registry.isMember(charlie)); // still a member
+        assertEq(registry.validatorCount(), 2);
+    }
+
     // ──────────────────── Helpers ────────────────────
 
     function _addMember(address who) internal {

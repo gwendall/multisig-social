@@ -98,13 +98,6 @@ contract TrustRegistry {
     error AssetAlreadyLinked();
     error NoAssetLinked();
 
-    // ──────────────────── Modifiers ────────────────────
-
-    modifier onlyValidator() {
-        if (!isValidator[msg.sender]) revert NotValidator();
-        _;
-    }
-
     // ──────────────────── Initialization ────────────────────
 
     function initialize(
@@ -162,8 +155,15 @@ contract TrustRegistry {
 
     // ──────────────────── Proposals ────────────────────
 
-    function propose(ProposalType _type, address _target) external onlyValidator returns (uint256) {
-        // Guards
+    function propose(ProposalType _type, address _target) external returns (uint256) {
+        // Access control: validators manage members, members manage validators
+        if (_isMemberProposal(_type)) {
+            if (!isValidator[msg.sender]) revert NotValidator();
+        } else {
+            if (!isMember[msg.sender]) revert NotMember();
+        }
+
+        // Target guards
         if (_type == ProposalType.ADD_MEMBER) {
             if (isMember[_target]) revert AlreadyMember();
         } else if (_type == ProposalType.REMOVE_MEMBER) {
@@ -187,7 +187,7 @@ contract TrustRegistry {
             }
         }
 
-        // Create proposal
+        // Create proposal — member proposals expire, validator proposals never expire
         proposalCount++;
         uint256 proposalId = proposalCount;
 
@@ -196,7 +196,9 @@ contract TrustRegistry {
             target: _target,
             proposer: msg.sender,
             createdAt: uint40(block.timestamp),
-            expiresAt: uint40(block.timestamp + proposalDuration),
+            expiresAt: _isMemberProposal(_type)
+                ? uint40(block.timestamp + proposalDuration)
+                : type(uint40).max,
             executed: false
         });
 
@@ -215,12 +217,20 @@ contract TrustRegistry {
         return proposalId;
     }
 
-    function vouch(uint256 _proposalId) external onlyValidator {
+    function vouch(uint256 _proposalId) external {
         if (_proposalId == 0 || _proposalId > proposalCount) revert ProposalNotFound();
 
         Proposal storage p = proposals[_proposalId];
         if (p.executed) revert ProposalAlreadyExecuted();
         if (block.timestamp > p.expiresAt) revert ProposalExpired();
+
+        // Access control: validators vouch on member proposals, members vouch on validator proposals
+        if (_isMemberProposal(p.proposalType)) {
+            if (!isValidator[msg.sender]) revert NotValidator();
+        } else {
+            if (!isMember[msg.sender]) revert NotMember();
+        }
+
         if (hasVouched[_proposalId][msg.sender]) revert AlreadyVouched();
 
         hasVouched[_proposalId][msg.sender] = true;
@@ -266,15 +276,22 @@ contract TrustRegistry {
 
     // ──────────────────── Internal ────────────────────
 
+    /// @dev Member proposals (ADD/REMOVE_MEMBER) are managed by validators.
+    ///      Validator proposals (ADD/REMOVE_VALIDATOR) are managed by members.
+    function _isMemberProposal(ProposalType _type) internal pure returns (bool) {
+        return _type == ProposalType.ADD_MEMBER || _type == ProposalType.REMOVE_MEMBER;
+    }
+
     function _tryExecute(uint256 _proposalId) internal {
         Proposal storage p = proposals[_proposalId];
         if (p.executed) return;
 
         uint256 required;
-        if (p.proposalType == ProposalType.ADD_MEMBER || p.proposalType == ProposalType.REMOVE_MEMBER) {
+        if (_isMemberProposal(p.proposalType)) {
             required = memberThreshold;
         } else {
-            required = (validators.length * validatorThresholdPct + 99) / 100;
+            // Validator proposals: threshold as % of all members (members elect validators)
+            required = (members.length * validatorThresholdPct + 99) / 100;
         }
 
         if (vouchCount[_proposalId] >= required) {
@@ -367,10 +384,10 @@ contract TrustRegistry {
     }
 
     function getRequiredVouches(ProposalType _type) external view returns (uint256) {
-        if (_type == ProposalType.ADD_MEMBER || _type == ProposalType.REMOVE_MEMBER) {
+        if (_isMemberProposal(_type)) {
             return memberThreshold;
         }
-        return (validators.length * validatorThresholdPct + 99) / 100;
+        return (members.length * validatorThresholdPct + 99) / 100;
     }
 
     function getAssetLink(address _member) external view returns (AssetLink memory) {

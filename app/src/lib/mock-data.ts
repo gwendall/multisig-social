@@ -64,16 +64,16 @@ export const MOCK_PROPOSALS: MockProposal[] = [
     vouchCount: BigInt(1),
     requiredVouches: BigInt(3),
   },
-  // Kicking a validator - 2/3 majority needed
+  // Kicking a validator - 1/3 majority needed
   {
     id: BigInt(4),
     proposalType: 3, // REMOVE_VALIDATOR
     target: ACC2,
-    proposer: ACC0,
+    proposer: ACC1,
     createdAt: now - 1800,
     expiresAt: weekFromNow,
     executed: false,
-    vouchCount: BigInt(2),
+    vouchCount: BigInt(1),
     requiredVouches: BigInt(3),
   },
 ];
@@ -88,19 +88,17 @@ export const MOCK_VOUCHERS: Record<string, MockVouch[]> = {
   "2": [{ address: ACC0, comment: "Met him at ETHCC, legit punk holder" }],
   "3": [{ address: ACC1, comment: "Been active since day 1, deserves it" }],
   "4": [
-    { address: ACC0, comment: "Meebit infiltrator. Caught him in a Meebits discord plotting against us" },
-    { address: ACC1, comment: "His punk is just a cover. He's been a Meebit agent all along" },
+    { address: ACC1, comment: "He's a Meebit agent! Caught him in a Meebits discord plotting against us!" },
   ],
 };
 
 export const MOCK_EVENTS: RegistryEvent[] = [
   // Active proposal events (most recent first)
   { eventName: "Vouched", args: { validator: ACC1, proposalId: BigInt(4) }, blockNumber: BigInt(18), transactionHash: "0xbbb1", timestamp: now - 300 },
-  { eventName: "Vouched", args: { validator: ACC0, proposalId: BigInt(4) }, blockNumber: BigInt(17), transactionHash: "0xbbb2", timestamp: now - 400 },
-  { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC2 }, blockNumber: BigInt(16), transactionHash: "0xbbb3", timestamp: now - 500 },
+  { eventName: "ProposalCreated", args: { proposer: ACC1, target: ACC2, proposalId: BigInt(4), proposalType: 3 }, blockNumber: BigInt(16), transactionHash: "0xbbb3", timestamp: now - 500 },
   { eventName: "Vouched", args: { validator: ACC0, proposalId: BigInt(2) }, blockNumber: BigInt(15), transactionHash: "0xbbb4", timestamp: now - 600 },
-  { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC5 }, blockNumber: BigInt(14), transactionHash: "0xbbb5", timestamp: now - 700 },
-  { eventName: "ProposalCreated", args: { proposer: ACC1, target: ACC3 }, blockNumber: BigInt(13), transactionHash: "0xbbb6", timestamp: now - 800 },
+  { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC5, proposalId: BigInt(2), proposalType: 0 }, blockNumber: BigInt(14), transactionHash: "0xbbb5", timestamp: now - 700 },
+  { eventName: "ProposalCreated", args: { proposer: ACC1, target: ACC3, proposalId: BigInt(3), proposalType: 2 }, blockNumber: BigInt(13), transactionHash: "0xbbb6", timestamp: now - 800 },
   // Existing history
   { eventName: "Applied", args: { applicant: ACC5 }, blockNumber: BigInt(12), transactionHash: "0xaaa1", timestamp: now - 900 },
   { eventName: "AssetLinked", args: { member: ACC3, tokenId: BigInt(6843) }, blockNumber: BigInt(11), transactionHash: "0xaaa2", timestamp: now - 1800 },
@@ -110,7 +108,7 @@ export const MOCK_EVENTS: RegistryEvent[] = [
   { eventName: "AssetLinked", args: { member: ACC4, tokenId: BigInt(1477) }, blockNumber: BigInt(7), transactionHash: "0xaaa6", timestamp: now - 3000 },
   { eventName: "ProposalExecuted", args: { proposalId: BigInt(1) }, blockNumber: BigInt(6), transactionHash: "0xaaa7", timestamp: now - 3600 },
   { eventName: "Vouched", args: { validator: ACC1, proposalId: BigInt(1) }, blockNumber: BigInt(5), transactionHash: "0xaaa8", timestamp: now - 3700 },
-  { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC4 }, blockNumber: BigInt(4), transactionHash: "0xaaa9", timestamp: now - 3800 },
+  { eventName: "ProposalCreated", args: { proposer: ACC0, target: ACC4, proposalId: BigInt(1), proposalType: 0 }, blockNumber: BigInt(4), transactionHash: "0xaaa9", timestamp: now - 3800 },
   { eventName: "MemberAdded", args: { member: ACC4 }, blockNumber: BigInt(3), transactionHash: "0xaaaa", timestamp: now - 4200 },
   { eventName: "ProposalExecuted", args: { proposalId: BigInt(0) }, blockNumber: BigInt(2), transactionHash: "0xaaab", timestamp: now - 5400 },
   { eventName: "Vouched", args: { validator: ACC1, proposalId: BigInt(0) }, blockNumber: BigInt(1), transactionHash: "0xaaac", timestamp: now - 5500 },
