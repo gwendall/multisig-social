@@ -74,7 +74,7 @@ export async function generateOGImage(
             style={{
               display: "flex",
               fontFamily: "Silkscreen",
-              fontSize: 72,
+              fontSize: 96,
               fontWeight: 400,
               color: "white",
               textTransform: "uppercase",
@@ -89,7 +89,7 @@ export async function generateOGImage(
               style={{
                 display: "flex",
                 fontFamily: "Silkscreen",
-                fontSize: 28,
+                fontSize: 50,
                 fontWeight: 400,
                 color: "white",
                 textTransform: "uppercase",
